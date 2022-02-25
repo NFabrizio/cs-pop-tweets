@@ -9,13 +9,7 @@ Project is written in Java, and uses Apache Storm for data stream processing.
 
 ## Usage
 
-This project is intended to be submitted to a Spark Master via `spark-submit` as a packaged JAR.
 
-- To build, compile, and package the project into a JAR, run `./refresh.sh`
-- To submit the built JAR to a Spark Master, edit the Spark job config to your liking and run
-    - `./submit.sh <hdfs_input_dir> <hdfs_output_dir>`
-- To ingest the raw data into HDFS, use
-    - `./ingest.sh <input_data_directory> <hdfs_data_directory>`
 
 ## Docs
 
