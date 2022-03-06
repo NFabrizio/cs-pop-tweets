@@ -13,7 +13,7 @@ import java.util.*;
 
 public class ReportBolt extends BaseRichBolt {
 //    private HashMap<String, Long> counts = null;
-    private ArrayList<String> tweets = null;
+    private ArrayList<String> hashTags = null;
     private String logPath = "TwitterSpoutLog.txt";
 
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
@@ -22,15 +22,15 @@ public class ReportBolt extends BaseRichBolt {
         if(pathArg != null && !pathArg.trim().isEmpty()) {
             this.logPath = pathArg;
         }
-        this.tweets = new ArrayList<String>();
+        this.hashTags = new ArrayList<String>();
     }
 
     public void execute(Tuple tuple) {
 //        String word = tuple.getStringByField("word");
 //        Long count = tuple.getLongByField("count");
 //        this.counts.put(word, count);
-        String tweet = tuple.getStringByField("tweet");
-        this.tweets.add(tweet);
+        String hashTag = tuple.getStringByField("hashTag");
+        this.hashTags.add(hashTag);
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
@@ -56,10 +56,10 @@ public class ReportBolt extends BaseRichBolt {
             e.printStackTrace();
         };
         BufferedWriter bw = new BufferedWriter(fileWriter);
-        for (String tweet : tweets){
-            System.out.println(tweet);
+        for (String hashTag : hashTags){
+            System.out.println(hashTag);
             try {
-                bw.write(tweet);
+                bw.write(hashTag);
                 bw.newLine();
             } catch (IOException e) {
                 e.printStackTrace();
