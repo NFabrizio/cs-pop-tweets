@@ -31,11 +31,9 @@ public class TwitterSpout extends BaseRichSpout {
             twitterStream = twitterIntegration.generateStream(this.collector);
 
             twitterStream.sample();
-//        TimeUnit.SECONDS.sleep(10);
+
             Utils.sleep(1000 * 10);
             twitterStream.shutdown();
-
-//            this.collector.emit(new Values());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

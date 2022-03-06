@@ -15,7 +15,7 @@ public class TwitterIntegration {
 
         StatusListener listener = new StatusListener(){
             public void onStatus(Status status) {
-                System.out.println(status.getText());
+//                System.out.println(status.getText());
                 collector.emit(new Values(status.getText()));
             }
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
