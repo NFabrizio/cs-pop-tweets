@@ -1,5 +1,6 @@
-package main.java.org.poptweets;
+package main.java.org.poptweets.bolt;
 
+import main.java.org.poptweets.Objects;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -11,9 +12,9 @@ import org.apache.storm.tuple.Values;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class LossyCounting extends BaseRichBolt {
+public class LossyCountingBolt extends BaseRichBolt {
     private OutputCollector collector;
-    private final Map<String, Objects> bucket = new ConcurrentHashMap<String, Objects>();
+    private final Map<String, main.java.org.poptweets.Objects> bucket = new ConcurrentHashMap<String, main.java.org.poptweets.Objects>();
     private double eps;
     private final double t;
     private int element = 0;
@@ -21,7 +22,7 @@ public class LossyCounting extends BaseRichBolt {
     private final int size = (int)Math.ceil(1 / eps);
     private long initTime, nowTime;
 
-    public LossyCounting(double eps, double t) {
+    public LossyCountingBolt(double eps, double t) {
         this.eps = eps;
         this.t = t;
     }
@@ -39,13 +40,13 @@ public class LossyCounting extends BaseRichBolt {
         content = tuple.getStringByField("hashTag");
         if (element < size) {
             if (!bucket.containsKey(content)) {
-                Objects d = new Objects();
+                main.java.org.poptweets.Objects d = new main.java.org.poptweets.Objects();
                 d.delta = usedBucket - 1;
                 d.count = 1;
                 d.element = content;
                 bucket.put(content, d);
             } else {
-                Objects d = bucket.get(content);
+                main.java.org.poptweets.Objects d = bucket.get(content);
                 d.count += 1;
                 bucket.put(content, d);
             }
@@ -57,7 +58,7 @@ public class LossyCounting extends BaseRichBolt {
             if (!bucket.isEmpty()) {
                 HashMap<String, Integer> tempOrdering = new HashMap<String, Integer>();
                 for (String keySet : bucket.keySet()) {
-                    Objects objkeySet= bucket.get(keySet);
+                    main.java.org.poptweets.Objects objkeySet= bucket.get(keySet);
                     double a = (t - eps) * element;
                     boolean sign = objkeySet.count >= a;
                     if (sign) {
