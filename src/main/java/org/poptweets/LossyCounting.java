@@ -1,3 +1,5 @@
+package main.java.org.poptweets;
+
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -119,12 +121,4 @@ public class LossyCounting extends BaseRichBolt {
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
         outputFieldsDeclarer.declare(new Fields("tag", "time"));
     }
-}
-class Objects {
-
-    public String element;
-    public int count;
-    public int delta;
-    public int svalue;
-    public float threshold;
 }
