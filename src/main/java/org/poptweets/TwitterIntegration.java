@@ -1,22 +1,22 @@
 package main.java.org.poptweets;
 
-import main.java.org.poptweets.utils.AuthProperties;
+import org.apache.storm.spout.SpoutOutputCollector;
+import org.apache.storm.tuple.Values;
 import twitter4j.*;
-import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 public class TwitterIntegration {
 
-    public static void main(String[] args) throws IOException {
-        AuthProperties authValues = new AuthProperties();
-        HashMap configProperties = authValues.getPropertyValues();
+    public TwitterStream generateStream(SpoutOutputCollector collector) throws IOException, InterruptedException {
+//        AuthProperties authValues = new AuthProperties();
+//        HashMap configProperties = authValues.getPropertyValues();
 
         StatusListener listener = new StatusListener(){
             public void onStatus(Status status) {
                 System.out.println(status.getText());
+                collector.emit(new Values(status.getText()));
             }
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
             public void onTrackLimitationNotice(int numberOfLimitedStatuses) {}
@@ -41,6 +41,16 @@ public class TwitterIntegration {
 //        AccessToken token =
 //                new AccessToken((String) configProperties.get("oauth.accessToken"), (String) configProperties.get("oauth.accessTokenSecret"));
 //        twitterStream.setOAuthAccessToken(token);
-        twitterStream.sample("en");
+//        twitterStream.sample("en");
+
+
+//        twitterStream.sample();
+//
+//        TimeUnit.SECONDS.sleep(10);
+//
+//        twitterStream.shutdown();
+
+        return twitterStream;
+
     }
 }
