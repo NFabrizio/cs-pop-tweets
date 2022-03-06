@@ -25,16 +25,16 @@
     </properties>
 
     <dependencies>
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.storm</groupId>-->
-        <!--            <artifactId>storm-client</artifactId>-->
-        <!--            <version>${storm.version}</version>-->
-        <!--            &lt;!&ndash;-->
-        <!--              Use "provided" scope to keep storm out of the jar-with-dependencies-->
-        <!--              For IntelliJ dev, intellij will load properly.-->
-        <!--            &ndash;&gt;-->
-        <!--            &lt;!&ndash;<scope>provided</scope>&ndash;&gt;-->
-        <!--        </dependency>-->
+                <dependency>
+                    <groupId>org.apache.storm</groupId>
+                    <artifactId>storm-client</artifactId>
+                    <version>${storm.version}</version>
+                    <!--
+                      Use "provided" scope to keep storm out of the jar-with-dependencies
+                      For IntelliJ dev, intellij will load properly.
+                    -->
+                    <!--<scope>provided</scope>-->
+                </dependency>
         <!--        <dependency>-->
         <!--            <groupId>org.apache.storm</groupId>-->
         <!--            <artifactId>storm-client</artifactId>-->
@@ -46,7 +46,7 @@
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-core</artifactId>
             <version>${storm.version}</version>
-            <scope>provided</scope>
+<!--            <scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
