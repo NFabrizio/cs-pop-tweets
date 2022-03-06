@@ -14,11 +14,14 @@ import java.util.*;
 public class ReportBolt extends BaseRichBolt {
 //    private HashMap<String, Long> counts = null;
     private ArrayList<String> tweets = null;
-    private String logPath;
+    private String logPath = "TwitterSpoutLog.txt";
 
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
 //        this.counts = new HashMap<String, Long>();
-        this.logPath = (String) config.get("LOG_FILE_LOCATION");
+        String pathArg = (String) config.get("LOG_FILE_LOCATION");
+        if(pathArg != null && !pathArg.trim().isEmpty()) {
+            this.logPath = pathArg;
+        }
         this.tweets = new ArrayList<String>();
     }
 
