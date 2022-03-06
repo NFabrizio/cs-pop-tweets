@@ -25,6 +25,7 @@ public class PopTweetsTopology {
 //            config.put("LOG_FILE_LOCATION", "abc123");
             config.put("LOG_FILE_LOCATION", args[0]);
         }
+        // TODO: Change the lines below to allow running on a Storm cluster
         // Use the line below to submit to Storm cluster
 //        StormSubmitter.submitTopology(TOPOLOGY_NAME, config,builder.createTopology());
 
