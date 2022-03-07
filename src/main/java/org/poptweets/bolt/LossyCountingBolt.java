@@ -20,6 +20,7 @@ public class LossyCountingBolt extends BaseRichBolt {
     private int element = 0;
     private int usedBucket = 1;
     private final int size = (int)Math.ceil(1 / eps);
+//    private int size;
     private long initTime, nowTime;
 
 //    public LossyCountingBolt(double eps, double t) {
@@ -40,6 +41,7 @@ public class LossyCountingBolt extends BaseRichBolt {
         if(threshold != null) {
             this.t = threshold;
         }
+//        size = (int)Math.ceil(1 / this.eps);
     }
 
     @Override
@@ -63,6 +65,9 @@ public class LossyCountingBolt extends BaseRichBolt {
         }
 
         nowTime = System.currentTimeMillis();
+//        System.out.println("counting times:");
+//        System.out.println(initTime);
+//        System.out.println(nowTime);
 //        if (nowTime >= initTime + 10000) {
             if (!bucket.isEmpty()) {
                 HashMap<String, Integer> tempOrdering = new HashMap<String, Integer>();
@@ -104,9 +109,14 @@ public class LossyCountingBolt extends BaseRichBolt {
                     str = sortedMap.keySet();
                     LinkedHashMap<String, Integer> finalEmit = new LinkedHashMap<String, Integer>();
                     for(String key: str){
-                        finalEmit.put("<"+key+":"+bucket.get(key).threshold+">", bucket.get(key).count);
+//                        finalEmit.put("<"+key+":"+bucket.get(key).threshold+">", bucket.get(key).count);
+                        finalEmit.put(key, bucket.get(key).count);
                     }
-                    collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
+
+                    // TODO: Need to figure out how to wait until at least 10 seconds have passed before emitting
+//                    while (nowTime <= initTime + 10000) {
+                        collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
+//                    }
                     //System.out.println("str:" + str.toString());
                 }
             }

@@ -30,7 +30,7 @@ public class TwitterSpout extends BaseRichSpout {
         try {
             twitterStream = twitterIntegration.generateStream(this.collector);
 
-            twitterStream.sample();
+            twitterStream.sample("en");
 
             Utils.sleep(1000 * 10);
             twitterStream.shutdown();
