@@ -18,6 +18,7 @@ public class HashTagFilterBolt extends BaseRichBolt {
     }
 
     public void execute(Tuple tuple) {
+//        System.out.println("************************ Executing HashTagFilterBolt ************************");
         String word = tuple.getStringByField("word");
 
         if (word != null && !word.trim().isEmpty() && word.charAt(0) == '#') {
