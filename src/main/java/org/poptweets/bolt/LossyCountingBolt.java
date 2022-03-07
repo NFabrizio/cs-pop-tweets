@@ -16,21 +16,30 @@ public class LossyCountingBolt extends BaseRichBolt {
     private OutputCollector collector;
     private final Map<String, main.java.org.poptweets.Objects> bucket = new ConcurrentHashMap<String, main.java.org.poptweets.Objects>();
     private double eps;
-    private final double t;
+    private double t;
     private int element = 0;
     private int usedBucket = 1;
     private final int size = (int)Math.ceil(1 / eps);
     private long initTime, nowTime;
 
-    public LossyCountingBolt(double eps, double t) {
-        this.eps = eps;
-        this.t = t;
-    }
+//    public LossyCountingBolt(double eps, double t) {
+//        this.eps = eps;
+//        this.t = t;
+//    }
 
     @Override
-    public void prepare(Map<String, Object> map, TopologyContext topologyContext, OutputCollector outputCollector) {
+    public void prepare(Map config, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;
         initTime = System.currentTimeMillis();
+
+        Double epsilon = (Double) config.get("EPSILON");
+        if(epsilon != null) {
+            this.eps = epsilon;
+        }
+        Double threshold = (Double) config.get("THRESHOLD");
+        if(threshold != null) {
+            this.t = threshold;
+        }
     }
 
     @Override
@@ -54,7 +63,7 @@ public class LossyCountingBolt extends BaseRichBolt {
         }
 
         nowTime = System.currentTimeMillis();
-        if (nowTime >= initTime + 10000) {
+//        if (nowTime >= initTime + 10000) {
             if (!bucket.isEmpty()) {
                 HashMap<String, Integer> tempOrdering = new HashMap<String, Integer>();
                 for (String keySet : bucket.keySet()) {
@@ -103,7 +112,7 @@ public class LossyCountingBolt extends BaseRichBolt {
             }
             initTime = nowTime;
 
-        }
+//        }
         if (size == element) {
             for (String word : bucket.keySet()) {
                 Objects d = bucket.get(word);

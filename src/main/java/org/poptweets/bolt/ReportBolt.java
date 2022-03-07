@@ -15,6 +15,7 @@ public class ReportBolt extends BaseRichBolt {
 //    private HashMap<String, Long> counts = null;
     private ArrayList<String> hashTags = null;
     private String logPath = "TwitterSpoutLog.txt";
+    private String time;
 
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
 //        this.counts = new HashMap<String, Long>();
@@ -29,7 +30,12 @@ public class ReportBolt extends BaseRichBolt {
 //        String word = tuple.getStringByField("word");
 //        Long count = tuple.getLongByField("count");
 //        this.counts.put(word, count);
-        String hashTag = tuple.getStringByField("hashTag");
+//        String hashTag = tuple.getStringByField("hashTag");
+//        this.hashTags.add(hashTag);
+        String hashTag = tuple.getStringByField("tag");
+        System.out.println("tuple.getLongByField(time)");
+        System.out.println(tuple.getLongByField("time"));
+        this.time = String.valueOf(tuple.getLongByField("time"));
         this.hashTags.add(hashTag);
     }
 
@@ -56,6 +62,17 @@ public class ReportBolt extends BaseRichBolt {
             e.printStackTrace();
         };
         BufferedWriter bw = new BufferedWriter(fileWriter);
+
+        try {
+//            System.out.println("this.time: ");
+//            System.out.println(this.time);
+            bw.write(this.time);
+//            bw.write(String.valueOf(System.currentTimeMillis()));
+        } catch (IOException e) {
+            System.out.println("Error occurred while attempting to write time");
+            e.printStackTrace();
+        }
+
         for (String hashTag : hashTags){
             System.out.println(hashTag);
             try {
