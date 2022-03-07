@@ -24,21 +24,29 @@ public class TwitterSpout extends BaseRichSpout {
     }
 
     public void nextTuple() {
+        System.out.println("************************ Executing TwitterSpout nextTuple ************************");
         TwitterIntegration twitterIntegration = new TwitterIntegration();
         TwitterStream twitterStream = null;
 
-        try {
-            twitterStream = twitterIntegration.generateStream(this.collector);
+//        while (true) {
+            try {
+                System.out.println("Generating Twitter stream in TwitterSpout");
+                twitterStream = twitterIntegration.generateStream(this.collector);
 
-            twitterStream.sample("en");
+                twitterStream.sample("en");
 
-            Utils.sleep(1000 * 10);
-            twitterStream.shutdown();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+                Utils.sleep(1000 * 10);
+                twitterStream.shutdown();
+            } catch (IOException e) {
+                System.out.println("TwitterSpout IOException");
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                System.out.println("TwitterSpout InterruptedException");
+                e.printStackTrace();
+            }
+
+            Utils.sleep(1000 * 20);
+//        }
 
     }
 }

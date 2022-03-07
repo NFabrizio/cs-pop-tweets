@@ -47,9 +47,9 @@ public class PopTweetsTopology {
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology(TOPOLOGY_NAME, config, builder.createTopology());
 
-        Thread.sleep(1000 * 10);
-
-        cluster.killTopology(TOPOLOGY_NAME);
-        cluster.shutdown();
+//        Thread.sleep(1000 * 10);
+//
+//        cluster.killTopology(TOPOLOGY_NAME);
+//        cluster.shutdown();
     }
 }

@@ -8,13 +8,14 @@ import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
+import org.apache.storm.utils.Utils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LossyCountingBolt extends BaseRichBolt {
     private OutputCollector collector;
-    private final Map<String, main.java.org.poptweets.Objects> bucket = new ConcurrentHashMap<String, main.java.org.poptweets.Objects>();
+    private Map<String, main.java.org.poptweets.Objects> bucket = new ConcurrentHashMap<String, main.java.org.poptweets.Objects>();
     private double eps;
     private double t;
     private int element = 0;
@@ -46,6 +47,7 @@ public class LossyCountingBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple){
+//        System.out.println("************************ Executing LossyCountingBolt ************************");
         String content;
         //content = tuple.toString();
         content = tuple.getStringByField("hashTag");
@@ -68,8 +70,8 @@ public class LossyCountingBolt extends BaseRichBolt {
 //        System.out.println("counting times:");
 //        System.out.println(initTime);
 //        System.out.println(nowTime);
-//        if (nowTime >= initTime + 10000) {
             if (!bucket.isEmpty()) {
+//                System.out.println("************************ LossyCountingBolt !bucket.isEmpty() ************************");
                 HashMap<String, Integer> tempOrdering = new HashMap<String, Integer>();
                 for (String keySet : bucket.keySet()) {
                     main.java.org.poptweets.Objects objkeySet= bucket.get(keySet);
@@ -81,6 +83,7 @@ public class LossyCountingBolt extends BaseRichBolt {
                     }
                 }
                 if (!tempOrdering.isEmpty()) {
+//                    System.out.println("************************ LossyCountingBolt !tempOrdering.isEmpty() ************************");
                     List<String> keys = new ArrayList<String>(tempOrdering.keySet());
                     List<Integer> values = new ArrayList<Integer>(tempOrdering.values());
                     keys.sort(Collections.reverseOrder());
@@ -113,14 +116,12 @@ public class LossyCountingBolt extends BaseRichBolt {
                         finalEmit.put(key, bucket.get(key).count);
                     }
 
-                    // TODO: Need to figure out how to wait until at least 10 seconds have passed before emitting
-//                    while (nowTime <= initTime + 10000) {
-                        collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
-//                    }
+//                    System.out.println("************************ Emit from LossyCountingBolt ************************");
+                    collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
                     //System.out.println("str:" + str.toString());
                 }
             }
-            initTime = nowTime;
+//            initTime = nowTime;
 
 //        }
         if (size == element) {
@@ -133,6 +134,16 @@ public class LossyCountingBolt extends BaseRichBolt {
             }
             element = 0;
             usedBucket += 1;
+        }
+
+        if (nowTime >= initTime + 11000) {
+            element = 0;
+            usedBucket = 1;
+            bucket = new ConcurrentHashMap<String, main.java.org.poptweets.Objects>();
+
+            Utils.sleep(1000 * 9);
+
+            initTime = nowTime;
         }
     }
 

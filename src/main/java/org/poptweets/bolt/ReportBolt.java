@@ -18,8 +18,10 @@ public class ReportBolt extends BaseRichBolt {
 //    private LinkedHashMap<String, Integer> hashTags = new LinkedHashMap<String, Integer>();
     private String logPath = "TwitterSpoutLog.txt";
     private String time;
+    private long startTime, nowTime;
 
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
+        this.startTime = System.currentTimeMillis();
 //        this.counts = new HashMap<String, Long>();
         String pathArg = (String) config.get("LOG_FILE_LOCATION");
         if(pathArg != null && !pathArg.trim().isEmpty()) {
@@ -29,22 +31,95 @@ public class ReportBolt extends BaseRichBolt {
     }
 
     public void execute(Tuple tuple) {
+//        System.out.println("************************ Executing ReportBolt ************************");
 //        String word = tuple.getStringByField("word");
 //        Long count = tuple.getLongByField("count");
 //        this.counts.put(word, count);
 //        String hashTag = tuple.getStringByField("hashTag");
 //        this.hashTags.add(hashTag);
-        String hashTag = tuple.getStringByField("tag");
+        String hashTagList = tuple.getStringByField("tag");
 //        System.out.println("tuple.getLongByField(time)");
 //        System.out.println(tuple.getLongByField("time"));
         this.time = String.valueOf(tuple.getLongByField("time"));
-        this.hashTags.add(hashTag);
+        this.hashTags.add(hashTagList);
+
+        nowTime = System.currentTimeMillis();
+
+        if (nowTime >= this.startTime + 12000) {
+            System.out.println("************************ Logging from ReportBolt ************************");
+            FileWriter fileWriter = null;
+            try {
+                fileWriter = new FileWriter(this.logPath, true);
+            } catch (IOException e) {
+                System.out.println("************************ ReportBolt filewriter IOException ************************");
+                e.printStackTrace();
+            };
+
+//        while (true) {
+            BufferedWriter bw = new BufferedWriter(fileWriter);
+//        if (this.time != null) {
+            try {
+//                Utils.sleep(1000 * 10);
+//            System.out.println("this.time: ");
+//            System.out.println(this.time);
+                bw.write(this.time + " ");
+                System.out.println("hashTags.size()");
+                System.out.println(this.hashTags.size());
+
+                int index = 0;
+                int longestIndex = 0;
+                for (String tagList : this.hashTags) {
+                    String[] tags = tagList.split(",");
+                    if (tags.length > longestIndex) {
+                        longestIndex = index;
+                    }
+                    index++;
+                }
+//                int hashTagsLength = hashTags.size();
+//                int hashTagsLastIndex = hashTags.size() - 1;
+//                bw.write(hashTags.get(hashTagsLastIndex));
+//                bw.write(this.hashTags.get(this.hashTags.size() - 1));
+                bw.write(this.hashTags.get(longestIndex));
+                bw.newLine();
+//            bw.write(String.valueOf(System.currentTimeMillis()));
+            } catch (IOException e) {
+                System.out.println("ReportBolt bw.write IOException Error occurred while attempting to write logs");
+                e.printStackTrace();
+            }
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+
+            for (String hashTag : hashTags) {
+                System.out.println(hashTag);
+//                try {
+//                    bw.write(hashTag);
+//                    bw.newLine();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+            }
+
+            try {
+                bw.flush();
+            } catch (IOException e) {
+                System.out.println("************************ ReportBolt flush IOException ************************");
+                e.printStackTrace();
+            }
+
+            this.hashTags = new ArrayList<String>();
+
+            Utils.sleep(1000 * 8);
+            this.startTime = nowTime;
+        }
+//        System.out.println("************************ ReportBolt execution finished ************************");
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
     }
 
     public void cleanup() {
+        System.out.println("************************ Cleaning up ReportBolt ************************");
 //        System.out.println("--- FINAL COUNTS ---");
 //        List<String> keys = new ArrayList<String>();
 //        keys.addAll(this.counts.keySet());
@@ -63,14 +138,15 @@ public class ReportBolt extends BaseRichBolt {
         } catch (IOException e) {
             e.printStackTrace();
         };
-        BufferedWriter bw = new BufferedWriter(fileWriter);
 
+//        while (true) {
+            BufferedWriter bw = new BufferedWriter(fileWriter);
 //        if (this.time != null) {
             try {
                 Utils.sleep(1000 * 10);
 //            System.out.println("this.time: ");
 //            System.out.println(this.time);
-                bw.write(this.time);
+                bw.write(this.time + " ");
                 System.out.println("hashTags.size()");
                 System.out.println(this.hashTags.size());
 
@@ -98,7 +174,7 @@ public class ReportBolt extends BaseRichBolt {
 //                e.printStackTrace();
 //            }
 
-        for (String hashTag : hashTags) {
+            for (String hashTag : hashTags) {
                 System.out.println(hashTag);
 //                try {
 //                    bw.write(hashTag);
@@ -109,10 +185,22 @@ public class ReportBolt extends BaseRichBolt {
             }
 
             try {
-                bw.close();
+                bw.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 //        }
+            Utils.sleep(1000 * 10);
+//        }
     }
+
+//    @Override
+//    protected void finalize() {
+//        try {
+//            reader.close();
+//            System.out.println("Closed BufferedReader in the finalizer");
+//        } catch (IOException e) {
+//            // ...
+//        }
+//    }
 }
