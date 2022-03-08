@@ -22,11 +22,13 @@ public class LossyCountingBolt extends BaseRichBolt {
     private int usedBucket = 1;
     private final int size = (int) Math.ceil(1 / eps);
     private long initTime, nowTime;
+    LinkedHashMap<String, Integer> finalEmit;
 
     @Override
     public void prepare(Map config, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;
         initTime = System.currentTimeMillis();
+        finalEmit = new LinkedHashMap<String, Integer>();
 
         Double epsilon = (Double) config.get("EPSILON");
         if (epsilon != null) {
@@ -96,12 +98,18 @@ public class LossyCountingBolt extends BaseRichBolt {
                     Collections.list(Collections.enumeration(sortedMap.keySet())).subList(0, 100);
                 }
                 str = sortedMap.keySet();
-                LinkedHashMap<String, Integer> finalEmit = new LinkedHashMap<String, Integer>();
+//                LinkedHashMap<String, Integer> finalEmit = new LinkedHashMap<String, Integer>();
                 for (String key : str) {
+//                    System.out.println("Adding to finalEmit");
                     finalEmit.put(key, bucket.get(key).count);
                 }
-
-                collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
+//                System.out.println("initTime + nowTime");
+//                System.out.println(initTime + 21000);
+//                System.out.println(nowTime);
+//                if (nowTime >= initTime + 21000) {
+//                    collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
+//                    initTime = nowTime;
+//                }
             }
         }
         if (size == element) {
@@ -116,10 +124,16 @@ public class LossyCountingBolt extends BaseRichBolt {
             usedBucket += 1;
         }
 
+//        System.out.println("***********initTime + nowTime***********");
+//        System.out.println(initTime + 21000);
+//        System.out.println(nowTime);
         if (nowTime >= initTime + 21000) {
             element = 0;
             usedBucket = 1;
             bucket = new ConcurrentHashMap<String, main.java.org.poptweets.Objects>();
+
+            collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
+            finalEmit = new LinkedHashMap<String, Integer>();
 
             Utils.sleep(1000 * 19);
 

@@ -20,6 +20,11 @@ public class PopTweetsTopology {
     private static final String REPORT_BOLT_ID = "report-bolt";
 
     public static void main(String[] args) throws Exception {
+        int parallelism = 1;
+
+        if (args.length == 4) {
+            parallelism = Integer.parseInt(args[3]);
+        }
         TwitterSpout spout = new TwitterSpout();
         TweetSplitBolt tweetSplitBolt = new TweetSplitBolt();
         HashTagFilterBolt hashTagFilterBolt = new HashTagFilterBolt();
@@ -30,23 +35,24 @@ public class PopTweetsTopology {
         builder.setSpout(TWITTER_SPOUT_ID, spout);
         builder.setBolt(TWEET_SPLIT_BOLT_ID, tweetSplitBolt).shuffleGrouping(TWITTER_SPOUT_ID);
         builder.setBolt(HASH_TAG_FILTER_BOLT_ID, hashTagFilterBolt).fieldsGrouping(TWEET_SPLIT_BOLT_ID, new Fields("word"));
-        builder.setBolt(LOSSY_COUNTING_BOLT_ID, lossyCountingBolt).fieldsGrouping(HASH_TAG_FILTER_BOLT_ID, new Fields("hashTag"));
+        builder.setBolt(LOSSY_COUNTING_BOLT_ID, lossyCountingBolt, parallelism).fieldsGrouping(HASH_TAG_FILTER_BOLT_ID, new Fields("hashTag"));
         builder.setBolt(REPORT_BOLT_ID, reportBolt).globalGrouping(LOSSY_COUNTING_BOLT_ID);
 
         Config config = new Config();
-        if (args.length == 3) {
+        if (args.length > 2) {
             config.put("LOG_FILE_LOCATION", args[0]);
             config.put("EPSILON", Double.parseDouble(args[1]));
             config.put("THRESHOLD", Double.parseDouble(args[2]));
         }
         // TODO: Change the lines below to allow running on a Storm cluster
         // Use the line below to submit to Storm cluster
-        StormSubmitter.submitTopology(TOPOLOGY_NAME, config,builder.createTopology());
+//        StormSubmitter.submitTopology(TOPOLOGY_NAME, config,builder.createTopology());
 
         // Use the section below to run locally
-//        LocalCluster cluster = new LocalCluster();
-//        cluster.submitTopology(TOPOLOGY_NAME, config, builder.createTopology());
+        LocalCluster cluster = new LocalCluster();
+        cluster.submitTopology(TOPOLOGY_NAME, config, builder.createTopology());
 
+        // The lines below kill the topology automatically after 10 seconds
 //        Thread.sleep(1000 * 10);
 //
 //        cluster.killTopology(TOPOLOGY_NAME);
