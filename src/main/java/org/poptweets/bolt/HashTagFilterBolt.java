@@ -20,6 +20,7 @@ public class HashTagFilterBolt extends BaseRichBolt {
     public void execute(Tuple tuple) {
         String word = tuple.getStringByField("word");
 
+        // Find only words that start with # so that only hash tags are sent forward
         if (word != null && !word.trim().isEmpty() && word.charAt(0) == '#') {
             this.collector.emit(new Values(word));
         }

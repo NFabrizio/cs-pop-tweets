@@ -24,17 +24,21 @@ public class TwitterSpout extends BaseRichSpout {
     }
 
     public void nextTuple() {
+        // nextTuple() is called in an infinite loop in Apache Storm until the topology is killed
         System.out.println("************************ Executing TwitterSpout nextTuple ************************");
         TwitterIntegration twitterIntegration = new TwitterIntegration();
         TwitterStream twitterStream = null;
 
         try {
-            System.out.println("Generating Twitter stream in TwitterSpout");
             twitterStream = twitterIntegration.generateStream(this.collector);
 
+            // sample() gets data from the Twitter v1 API - https://stream.twitter.com/1.1/statuses/sample.json
+            // "en" filters tweets that are classified as being written in English
             twitterStream.sample("en");
 
+            // Sleep for 10 seconds to create a 10 second window
             Utils.sleep(1000 * 10);
+            // Shutdown to avoid getting rate limited
             twitterStream.shutdown();
         } catch (IOException e) {
             System.out.println("TwitterSpout IOException");

@@ -35,27 +35,27 @@ public class PopTweetsTopology {
         builder.setSpout(TWITTER_SPOUT_ID, spout);
         builder.setBolt(TWEET_SPLIT_BOLT_ID, tweetSplitBolt).shuffleGrouping(TWITTER_SPOUT_ID);
         builder.setBolt(HASH_TAG_FILTER_BOLT_ID, hashTagFilterBolt).fieldsGrouping(TWEET_SPLIT_BOLT_ID, new Fields("word"));
+        // Use parallelism to configure number of executors per worker
         builder.setBolt(LOSSY_COUNTING_BOLT_ID, lossyCountingBolt, parallelism).fieldsGrouping(HASH_TAG_FILTER_BOLT_ID, new Fields("hashTag"));
+        // Use global grouping so that all results from lossy counting are sent to a single report bolt
         builder.setBolt(REPORT_BOLT_ID, reportBolt).globalGrouping(LOSSY_COUNTING_BOLT_ID);
 
         Config config = new Config();
+        // Use parallelism to configure number of worker nodes
+        config.setNumWorkers(parallelism);
+
         if (args.length > 2) {
+            // Add values to config so that they are available for bolts
             config.put("LOG_FILE_LOCATION", args[0]);
             config.put("EPSILON", Double.parseDouble(args[1]));
             config.put("THRESHOLD", Double.parseDouble(args[2]));
         }
-        // TODO: Change the lines below to allow running on a Storm cluster
-        // Use the line below to submit to Storm cluster
+
+        // Use the line below rather than LocalCluster to be able to submit to Storm cluster
         StormSubmitter.submitTopology(TOPOLOGY_NAME, config,builder.createTopology());
 
-//        // Use the section below to run locally
+        // Use the section below rather than StormSubmitter to run locally
 //        LocalCluster cluster = new LocalCluster();
 //        cluster.submitTopology(TOPOLOGY_NAME, config, builder.createTopology());
-
-        // The lines below kill the topology automatically after 10 seconds
-//        Thread.sleep(1000 * 10);
-//
-//        cluster.killTopology(TOPOLOGY_NAME);
-//        cluster.shutdown();
     }
 }

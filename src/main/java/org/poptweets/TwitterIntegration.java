@@ -10,12 +10,9 @@ import java.io.IOException;
 public class TwitterIntegration {
 
     public TwitterStream generateStream(SpoutOutputCollector collector) throws IOException, InterruptedException {
-//        AuthProperties authValues = new AuthProperties();
-//        HashMap configProperties = authValues.getPropertyValues();
-
         StatusListener listener = new StatusListener(){
             public void onStatus(Status status) {
-//                System.out.println(status.getText());
+                // When a status is received, emit its value to make it available to the next part of the chain
                 collector.emit(new Values(status.getText()));
             }
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
@@ -32,23 +29,11 @@ public class TwitterIntegration {
             }
         };
 
+        // Create a new Twitter stream and listen to it
         TwitterStream twitterStream = new TwitterStreamFactory(
                 new ConfigurationBuilder().setJSONStoreEnabled(true).build())
                 .getInstance();
         twitterStream.addListener(listener);
-        // Add a twitter4j.properties file to the classpath when running program, and the lines below will not be needed
-//        twitterStream.setOAuthConsumer((String) configProperties.get("oauth.consumerKey"), (String) configProperties.get("oauth.consumerSecret"));
-//        AccessToken token =
-//                new AccessToken((String) configProperties.get("oauth.accessToken"), (String) configProperties.get("oauth.accessTokenSecret"));
-//        twitterStream.setOAuthAccessToken(token);
-//        twitterStream.sample("en");
-
-
-//        twitterStream.sample();
-//
-//        TimeUnit.SECONDS.sleep(10);
-//
-//        twitterStream.shutdown();
 
         return twitterStream;
 

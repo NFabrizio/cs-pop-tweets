@@ -15,6 +15,7 @@ import java.util.*;
 public class ReportBolt extends BaseRichBolt {
     private ArrayList<String> hashTags = null;
     private LinkedHashMap<String, Integer> hashTagsList = null;
+    // Default log file path if none is provided
     private String logPath = "TwitterSpoutLog.txt";
     private String time;
     private ArrayList<String> counts = null;
@@ -23,22 +24,31 @@ public class ReportBolt extends BaseRichBolt {
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
         this.startTime = System.currentTimeMillis();
         String pathArg = (String) config.get("LOG_FILE_LOCATION");
+
         if (pathArg != null && !pathArg.trim().isEmpty()) {
             this.logPath = pathArg;
         }
+
         this.hashTags = new ArrayList<String>();
         hashTagsList = new LinkedHashMap<String, Integer>();
     }
 
     public void execute(Tuple tuple) {
+        // Ex. "[hashtag1=3, hashtag2=1, hashtag3=1]"
         String hashTagList = tuple.getStringByField("tags");
+        // Ex. "1646759511696"
         this.time = String.valueOf(tuple.getLongByField("time"));
 
+        // Tags come in as a list surrounded by [], substring to remove these
         hashTagList = hashTagList.substring(1, hashTagList.length() - 1);
             String[] tags = hashTagList.split(", ");
+
+            // Split each tag pair (e.g., hashtag1=3) and add them as keys and values to the map
             for (String tagPair : tags) {
                 String[] tagKeyValue = tagPair.trim().split("=");
                 Boolean valueExists = hashTagsList.containsKey(tagKeyValue[0]);
+
+                // If the key already exists, aggregate the values otherwise add the key and value
                 if (valueExists) {
                     hashTagsList.put(tagKeyValue[0], Integer.parseInt(tagKeyValue[1]) + hashTagsList.get(tagKeyValue[0]));
                 } else {
@@ -48,6 +58,7 @@ public class ReportBolt extends BaseRichBolt {
 
         nowTime = System.currentTimeMillis();
 
+            // Every 10 seconds, write to log file and reset persisted data
         if (nowTime >= this.startTime + 10000) {
             System.out.println("************************ Logging from ReportBolt ************************");
             FileWriter fileWriter = null;
@@ -57,10 +68,10 @@ public class ReportBolt extends BaseRichBolt {
                 System.out.println("************************ ReportBolt filewriter IOException ************************");
                 e.printStackTrace();
             }
-            ;
 
             BufferedWriter bw = new BufferedWriter(fileWriter);
             try {
+                // Sort linked hash map by copying to ArrayList and sorting in descending order
                 List<Map.Entry<String, Integer>> entries = new ArrayList<Map.Entry<String, Integer>>(this.hashTagsList.entrySet());
                 Collections.sort(entries, Collections.reverseOrder(new Comparator<Map.Entry<String, Integer>>() {
                     public int compare(Map.Entry<String, Integer> a, Map.Entry<String, Integer> b){
@@ -70,10 +81,12 @@ public class ReportBolt extends BaseRichBolt {
 
                 Map<String, Integer> sortedEntries = new LinkedHashMap<String, Integer>();
 
+                // Convert sorted ArrayList back to map for easier display
                 for (Map.Entry<String, Integer> entry : entries) {
                     sortedEntries.put(entry.getKey(), entry.getValue());
                 }
 
+                // Ex. "1646758699746 [#BTSARMY, #PS4, #ETH, #SB19]"
                 bw.write(this.time + " ");
                 bw.write(sortedEntries.keySet().toString());
                 bw.newLine();
@@ -100,6 +113,7 @@ public class ReportBolt extends BaseRichBolt {
     }
 
     public void cleanup() {
+        // Since this program is designed to run until stopped manually, this method should never be called
         System.out.println("************************ Cleaning up ReportBolt ************************");
 
         FileWriter fileWriter = null;
