@@ -21,7 +21,7 @@ This project is intended to be submitted to an Apache Storm cluster as a package
     Example command usage:  
     `storm jar path/to/pop-tweets-1.0-SNAPSHOT-jar-with-dependencies.jar main.java.org.poptweets.PopTweetsTopology /absolute/path/to/TwitterLogs.txt 0.5 0.6`  
 * To submit the jar with dependencies to the Apache Storm cluster and have it run with parallelization, run the following command:  
-    * `storm jar path/to/pop-tweets-jar-with-dependencies.jar main.java.org.poptweets.PopTweetsTopology /absolute/path/to/logfile.txt [epsilon_value] [threshold_value]`  
+    * `storm jar path/to/pop-tweets-jar-with-dependencies.jar main.java.org.poptweets.PopTweetsTopology /absolute/path/to/logfile.txt [epsilon_value] [threshold_value] [parallel_value]`  
     Example command usage:  
     `storm jar path/to/pop-tweets-1.0-SNAPSHOT-jar-with-dependencies.jar main.java.org.poptweets.PopTweetsTopology /absolute/path/to/TwitterLogs.txt 0.5 0.6 4`
 
