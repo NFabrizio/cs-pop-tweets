@@ -34,7 +34,7 @@ public class TwitterSpout extends BaseRichSpout {
 
             twitterStream.sample("en");
 
-            Utils.sleep(1000 * 20);
+            Utils.sleep(1000 * 10);
             twitterStream.shutdown();
         } catch (IOException e) {
             System.out.println("TwitterSpout IOException");
@@ -44,7 +44,7 @@ public class TwitterSpout extends BaseRichSpout {
             e.printStackTrace();
         }
 
-        Utils.sleep(1000 * 20);
+//        Utils.sleep(1000 * 5);
 
     }
 }

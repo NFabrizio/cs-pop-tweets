@@ -127,15 +127,19 @@ public class LossyCountingBolt extends BaseRichBolt {
 //        System.out.println("***********initTime + nowTime***********");
 //        System.out.println(initTime + 21000);
 //        System.out.println(nowTime);
-        if (nowTime >= initTime + 21000) {
+        if (nowTime >= initTime + 10000) {
             element = 0;
             usedBucket = 1;
             bucket = new ConcurrentHashMap<String, main.java.org.poptweets.Objects>();
 
-            collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
+//            collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
+            collector.emit(new Values(finalEmit.entrySet().toString(), initTime));
+//            collector.emit(new Values(finalEmit, nowTime));
+//            collector.emit(new Values(finalEmit.keySet().toString(), finalEmit.keySet().stream().count()));
+
             finalEmit = new LinkedHashMap<String, Integer>();
 
-            Utils.sleep(1000 * 19);
+//            Utils.sleep(1000 * 19);
 
             initTime = nowTime;
         }
@@ -145,6 +149,6 @@ public class LossyCountingBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("tag", "time"));
+        outputFieldsDeclarer.declare(new Fields("tags", "time"));
     }
 }
