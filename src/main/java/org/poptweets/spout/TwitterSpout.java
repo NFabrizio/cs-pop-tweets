@@ -28,25 +28,23 @@ public class TwitterSpout extends BaseRichSpout {
         TwitterIntegration twitterIntegration = new TwitterIntegration();
         TwitterStream twitterStream = null;
 
-//        while (true) {
-            try {
-                System.out.println("Generating Twitter stream in TwitterSpout");
-                twitterStream = twitterIntegration.generateStream(this.collector);
+        try {
+            System.out.println("Generating Twitter stream in TwitterSpout");
+            twitterStream = twitterIntegration.generateStream(this.collector);
 
-                twitterStream.sample("en");
-
-                Utils.sleep(1000 * 10);
-                twitterStream.shutdown();
-            } catch (IOException e) {
-                System.out.println("TwitterSpout IOException");
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                System.out.println("TwitterSpout InterruptedException");
-                e.printStackTrace();
-            }
+            twitterStream.sample("en");
 
             Utils.sleep(1000 * 20);
-//        }
+            twitterStream.shutdown();
+        } catch (IOException e) {
+            System.out.println("TwitterSpout IOException");
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            System.out.println("TwitterSpout InterruptedException");
+            e.printStackTrace();
+        }
+
+        Utils.sleep(1000 * 20);
 
     }
 }
