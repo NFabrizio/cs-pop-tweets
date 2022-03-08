@@ -30,6 +30,7 @@ public class LossyCountingBolt extends BaseRichBolt {
         initTime = System.currentTimeMillis();
         finalEmit = new LinkedHashMap<String, Integer>();
 
+        // Get command line values from config for use in this algorithm
         Double epsilon = (Double) config.get("EPSILON");
         if (epsilon != null) {
             this.eps = epsilon;
@@ -44,6 +45,7 @@ public class LossyCountingBolt extends BaseRichBolt {
     public void execute(Tuple tuple) {
         String content;
         content = tuple.getStringByField("hashTag");
+
         if (element < size) {
             if (!bucket.containsKey(content)) {
                 main.java.org.poptweets.Objects d = new main.java.org.poptweets.Objects();
@@ -117,6 +119,7 @@ public class LossyCountingBolt extends BaseRichBolt {
             usedBucket += 1;
         }
 
+        // Every 10 seconds, reset all values to clean up persisted data and emit result
         if (nowTime >= initTime + 10000) {
             element = 0;
             usedBucket = 1;
