@@ -128,6 +128,7 @@ public class LossyCountingBolt extends BaseRichBolt {
     }
 
 
+
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
         outputFieldsDeclarer.declare(new Fields("tag", "time"));
