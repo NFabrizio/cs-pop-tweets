@@ -18,10 +18,7 @@ public class TweetSplitBolt extends BaseRichBolt {
     }
 
     public void execute(Tuple tuple) {
-//        System.out.println("************************ Executing TweetSplitBolt ************************");
         String tweet = tuple.getStringByField("tweet");
-//        System.out.println(tweet);
-//        String[] words = tweet.split(" ");
         String[] words = tweet.split("\\s+");
 
         for (String word : words) {

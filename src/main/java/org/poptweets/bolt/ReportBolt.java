@@ -13,39 +13,28 @@ import java.io.IOException;
 import java.util.*;
 
 public class ReportBolt extends BaseRichBolt {
-//    private HashMap<String, Long> counts = null;
     private ArrayList<String> hashTags = null;
-//    private LinkedHashMap<String, Integer> hashTags = new LinkedHashMap<String, Integer>();
     private String logPath = "TwitterSpoutLog.txt";
     private String time;
     private long startTime, nowTime;
 
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
         this.startTime = System.currentTimeMillis();
-//        this.counts = new HashMap<String, Long>();
         String pathArg = (String) config.get("LOG_FILE_LOCATION");
-        if(pathArg != null && !pathArg.trim().isEmpty()) {
+        if (pathArg != null && !pathArg.trim().isEmpty()) {
             this.logPath = pathArg;
         }
         this.hashTags = new ArrayList<String>();
     }
 
     public void execute(Tuple tuple) {
-//        System.out.println("************************ Executing ReportBolt ************************");
-//        String word = tuple.getStringByField("word");
-//        Long count = tuple.getLongByField("count");
-//        this.counts.put(word, count);
-//        String hashTag = tuple.getStringByField("hashTag");
-//        this.hashTags.add(hashTag);
         String hashTagList = tuple.getStringByField("tag");
-//        System.out.println("tuple.getLongByField(time)");
-//        System.out.println(tuple.getLongByField("time"));
         this.time = String.valueOf(tuple.getLongByField("time"));
         this.hashTags.add(hashTagList);
 
         nowTime = System.currentTimeMillis();
 
-        if (nowTime >= this.startTime + 12000) {
+        if (nowTime >= this.startTime + 22000) {
             System.out.println("************************ Logging from ReportBolt ************************");
             FileWriter fileWriter = null;
             try {
@@ -53,15 +42,11 @@ public class ReportBolt extends BaseRichBolt {
             } catch (IOException e) {
                 System.out.println("************************ ReportBolt filewriter IOException ************************");
                 e.printStackTrace();
-            };
+            }
+            ;
 
-//        while (true) {
             BufferedWriter bw = new BufferedWriter(fileWriter);
-//        if (this.time != null) {
             try {
-//                Utils.sleep(1000 * 10);
-//            System.out.println("this.time: ");
-//            System.out.println(this.time);
                 bw.write(this.time + " ");
                 System.out.println("hashTags.size()");
                 System.out.println(this.hashTags.size());
@@ -75,29 +60,16 @@ public class ReportBolt extends BaseRichBolt {
                     }
                     index++;
                 }
-//                int hashTagsLength = hashTags.size();
-//                int hashTagsLastIndex = hashTags.size() - 1;
-//                bw.write(hashTags.get(hashTagsLastIndex));
-//                bw.write(this.hashTags.get(this.hashTags.size() - 1));
+
                 bw.write(this.hashTags.get(longestIndex));
                 bw.newLine();
-//            bw.write(String.valueOf(System.currentTimeMillis()));
             } catch (IOException e) {
                 System.out.println("ReportBolt bw.write IOException Error occurred while attempting to write logs");
                 e.printStackTrace();
             }
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
 
             for (String hashTag : hashTags) {
                 System.out.println(hashTag);
-//                try {
-//                    bw.write(hashTag);
-//                    bw.newLine();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
             }
 
             try {
@@ -109,10 +81,9 @@ public class ReportBolt extends BaseRichBolt {
 
             this.hashTags = new ArrayList<String>();
 
-            Utils.sleep(1000 * 8);
+            Utils.sleep(1000 * 18);
             this.startTime = nowTime;
         }
-//        System.out.println("************************ ReportBolt execution finished ************************");
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
@@ -120,87 +91,50 @@ public class ReportBolt extends BaseRichBolt {
 
     public void cleanup() {
         System.out.println("************************ Cleaning up ReportBolt ************************");
-//        System.out.println("--- FINAL COUNTS ---");
-//        List<String> keys = new ArrayList<String>();
-//        keys.addAll(this.counts.keySet());
-//        Collections.sort(keys);
-//        for (String key : keys) {
-//            System.out.println(key + " : " + this.counts.get(key));
-//        }
-//        System.out.println("--- FINAL TWEETS ---");
-//        for (String tweet : tweets) {
-//            System.out.println(tweet);
-//        }
 
         FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(this.logPath, true);
         } catch (IOException e) {
             e.printStackTrace();
-        };
+        }
+        ;
 
-//        while (true) {
-            BufferedWriter bw = new BufferedWriter(fileWriter);
-//        if (this.time != null) {
-            try {
-                Utils.sleep(1000 * 10);
-//            System.out.println("this.time: ");
-//            System.out.println(this.time);
-                bw.write(this.time + " ");
-                System.out.println("hashTags.size()");
-                System.out.println(this.hashTags.size());
+        BufferedWriter bw = new BufferedWriter(fileWriter);
 
-                int index = 0;
-                int longestIndex = 0;
-                for (String tagList : this.hashTags) {
-                    String[] tags = tagList.split(",");
-                    if (tags.length > longestIndex) {
-                        longestIndex = index;
-                    }
-                    index++;
-                }
-//                int hashTagsLength = hashTags.size();
-//                int hashTagsLastIndex = hashTags.size() - 1;
-//                bw.write(hashTags.get(hashTagsLastIndex));
-//                bw.write(this.hashTags.get(this.hashTags.size() - 1));
-                bw.write(this.hashTags.get(longestIndex));
-                bw.newLine();
-//            bw.write(String.valueOf(System.currentTimeMillis()));
-            } catch (IOException e) {
-                System.out.println("Error occurred while attempting to write logs");
-                e.printStackTrace();
-            }
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-
-            for (String hashTag : hashTags) {
-                System.out.println(hashTag);
-//                try {
-//                    bw.write(hashTag);
-//                    bw.newLine();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-            }
-
-            try {
-                bw.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-//        }
+        try {
             Utils.sleep(1000 * 10);
-//        }
-    }
 
-//    @Override
-//    protected void finalize() {
-//        try {
-//            reader.close();
-//            System.out.println("Closed BufferedReader in the finalizer");
-//        } catch (IOException e) {
-//            // ...
-//        }
-//    }
+            bw.write(this.time + " ");
+            System.out.println("hashTags.size()");
+            System.out.println(this.hashTags.size());
+
+            int index = 0;
+            int longestIndex = 0;
+            for (String tagList : this.hashTags) {
+                String[] tags = tagList.split(",");
+                if (tags.length > longestIndex) {
+                    longestIndex = index;
+                }
+                index++;
+            }
+
+            bw.write(this.hashTags.get(longestIndex));
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("Error occurred while attempting to write logs");
+            e.printStackTrace();
+        }
+
+        for (String hashTag : hashTags) {
+            System.out.println(hashTag);
+        }
+
+        try {
+            bw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Utils.sleep(1000 * 10);
+    }
 }
