@@ -33,12 +33,6 @@ public class ReportBolt extends BaseRichBolt {
     public void execute(Tuple tuple) {
         String hashTagList = tuple.getStringByField("tags");
         this.time = String.valueOf(tuple.getLongByField("time"));
-//        Long countList = tuple.getLongByField("counts");
-        System.out.println("hashTagList");
-        System.out.println(hashTagList);
-//        this.hashTags.add(hashTagList);
-//        this.counts.add(countList);
-//        hashTagsList = tuple.getValueByField("tags");
 
         hashTagList = hashTagList.substring(1, hashTagList.length() - 1);
             String[] tags = hashTagList.split(", ");
@@ -67,14 +61,6 @@ public class ReportBolt extends BaseRichBolt {
 
             BufferedWriter bw = new BufferedWriter(fileWriter);
             try {
-                bw.write(this.time + " ");
-//                bw.write(nowTime + " ");
-//                System.out.println("hashTags.size()");
-//                System.out.println(this.hashTags.size());
-                System.out.println("hashTagsList.size()");
-                System.out.println(this.hashTagsList.size());
-                System.out.println(this.hashTagsList.entrySet().toString());
-
                 List<Map.Entry<String, Integer>> entries = new ArrayList<Map.Entry<String, Integer>>(this.hashTagsList.entrySet());
                 Collections.sort(entries, Collections.reverseOrder(new Comparator<Map.Entry<String, Integer>>() {
                     public int compare(Map.Entry<String, Integer> a, Map.Entry<String, Integer> b){
@@ -82,40 +68,19 @@ public class ReportBolt extends BaseRichBolt {
                     }
                 }));
 
-                System.out.println(entries.toString());
-
                 Map<String, Integer> sortedEntries = new LinkedHashMap<String, Integer>();
 
                 for (Map.Entry<String, Integer> entry : entries) {
                     sortedEntries.put(entry.getKey(), entry.getValue());
                 }
 
-
-//                int index = 0;
-//                int longestIndex = 0;
-//                for (String tagList : this.hashTags) {
-//                    String[] tags = tagList.split(",");
-//                    if (tags.length > longestIndex) {
-//                        longestIndex = index;
-//                    }
-//                    index++;
-//                }
-
-//                bw.write(this.hashTags.get(longestIndex));
-//                bw.write(this.hashTagsList.keySet().toString());
+                bw.write(this.time + " ");
                 bw.write(sortedEntries.keySet().toString());
                 bw.newLine();
             } catch (IOException e) {
                 System.out.println("ReportBolt bw.write IOException Error occurred while attempting to write logs");
                 e.printStackTrace();
             }
-
-            for (String hashTag : hashTags) {
-                System.out.println(hashTag);
-            }
-//            for (String count : counts) {
-//                System.out.println(count);
-//            }
 
             try {
                 bw.flush();
@@ -127,7 +92,6 @@ public class ReportBolt extends BaseRichBolt {
             this.hashTags = new ArrayList<String>();
             this.hashTagsList = new LinkedHashMap<String, Integer>();
 
-//            Utils.sleep(1000 * 18);
             this.startTime = nowTime;
         }
     }

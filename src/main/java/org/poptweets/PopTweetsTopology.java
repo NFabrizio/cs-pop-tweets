@@ -46,11 +46,11 @@ public class PopTweetsTopology {
         }
         // TODO: Change the lines below to allow running on a Storm cluster
         // Use the line below to submit to Storm cluster
-//        StormSubmitter.submitTopology(TOPOLOGY_NAME, config,builder.createTopology());
+        StormSubmitter.submitTopology(TOPOLOGY_NAME, config,builder.createTopology());
 
-        // Use the section below to run locally
-        LocalCluster cluster = new LocalCluster();
-        cluster.submitTopology(TOPOLOGY_NAME, config, builder.createTopology());
+//        // Use the section below to run locally
+//        LocalCluster cluster = new LocalCluster();
+//        cluster.submitTopology(TOPOLOGY_NAME, config, builder.createTopology());
 
         // The lines below kill the topology automatically after 10 seconds
 //        Thread.sleep(1000 * 10);
