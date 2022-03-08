@@ -94,22 +94,15 @@ public class LossyCountingBolt extends BaseRichBolt {
                     }
                 }
                 Collection<String> str;
+
                 if (sortedMap.size() > 100) {
                     Collections.list(Collections.enumeration(sortedMap.keySet())).subList(0, 100);
                 }
                 str = sortedMap.keySet();
-//                LinkedHashMap<String, Integer> finalEmit = new LinkedHashMap<String, Integer>();
+
                 for (String key : str) {
-//                    System.out.println("Adding to finalEmit");
                     finalEmit.put(key, bucket.get(key).count);
                 }
-//                System.out.println("initTime + nowTime");
-//                System.out.println(initTime + 21000);
-//                System.out.println(nowTime);
-//                if (nowTime >= initTime + 21000) {
-//                    collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
-//                    initTime = nowTime;
-//                }
             }
         }
         if (size == element) {
@@ -124,22 +117,14 @@ public class LossyCountingBolt extends BaseRichBolt {
             usedBucket += 1;
         }
 
-//        System.out.println("***********initTime + nowTime***********");
-//        System.out.println(initTime + 21000);
-//        System.out.println(nowTime);
         if (nowTime >= initTime + 10000) {
             element = 0;
             usedBucket = 1;
             bucket = new ConcurrentHashMap<String, main.java.org.poptweets.Objects>();
 
-//            collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
             collector.emit(new Values(finalEmit.entrySet().toString(), initTime));
-//            collector.emit(new Values(finalEmit, nowTime));
-//            collector.emit(new Values(finalEmit.keySet().toString(), finalEmit.keySet().stream().count()));
 
             finalEmit = new LinkedHashMap<String, Integer>();
-
-//            Utils.sleep(1000 * 19);
 
             initTime = nowTime;
         }

@@ -44,7 +44,5 @@ public class TwitterSpout extends BaseRichSpout {
             e.printStackTrace();
         }
 
-//        Utils.sleep(1000 * 5);
-
     }
 }
