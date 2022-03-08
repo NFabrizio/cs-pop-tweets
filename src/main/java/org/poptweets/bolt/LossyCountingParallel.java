@@ -101,7 +101,7 @@ public class LossyCountingParallel extends BaseRichBolt {
                     finalEmit.put(key, bucket.get(key).count);
                 }
 
-                collector.emit(new Values(finalEmit.keySet().toString(), nowTime));
+                collector.emit(new Values(finalEmit.keySet().toString(), finalEmit.keySet().stream().count()));
             }
         }
         if (size == element) {
